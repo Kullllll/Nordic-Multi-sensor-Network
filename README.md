@@ -1,89 +1,110 @@
 # Nordic Multi-sensor Network
 
-Blink an LED forever using the GPIO API.
-
----
-
 ## Overview
 
-The Blinky sample blinks an LED forever using the GPIO API.
+Nordic Multi-sensor Network is an embedded IoT project based on Nordic Semiconductor development boards and the nRF Connect SDK.
 
-The source code shows how to:
+The goal of this project is to build a multi-sensor monitoring system capable of collecting environmental data from multiple sensors and processing them in real time.
 
-1. Get a pin specification from the devicetree as a `gpio_dt_spec`
-2. Configure the GPIO pin as an output
-3. Toggle the pin forever
+Currently, the first version of the project supports:
 
-See `pwm-blinky` for a similar sample that uses the PWM API instead.
+- MQ5 gas sensor reading
+- Light sensor (photoresistor/LDR) reading
+- ADC data acquisition using Nordic nRF boards
+- Serial output for real-time monitoring
+
+This project is developed using:
+
+- nRF Connect SDK (Zephyr RTOS)
+- C programming language
+- Visual Studio Code
+- Nordic Semiconductor development tools
+
+Future versions may include:
+
+- Wireless communication
+- MQTT integration
+- BLE connectivity
+- Cloud monitoring
+- Multi-node sensor networking
 
 ---
 
 ## Requirements
 
-Your board must:
+### Hardware
 
-1. Have an LED connected via a GPIO pin
-2. Have the LED configured using the `led0` devicetree alias
+- Nordic nRF development board
+- MQ5 gas sensor
+- LDR / photoresistor light sensor
+- Jumper wires
+- USB cable
+
+### Software
+
+- Ubuntu Linux
+- Visual Studio Code
+- nRF Connect SDK
+- West tool
+- CMake
+- Ninja build system
 
 ---
 
 ## Building and Running
 
-Build and flash Blinky as follows, changing `reel_board` for your board:
+### 1. Clone the repository
 
 ```bash
-west build -b reel_board
+git clone https://github.com/Kullllll/Nordic-Multi-sensor-Network.git
+cd Nordic-Multi-sensor-Network
+```
+
+### 2. Build the project
+
+```bash
+west build -b <your_board>
+```
+
+Example:
+
+```bash
+west build -b nrf52840dk/nrf52840
+```
+
+### 3. Flash the firmware
+
+```bash
 west flash
 ```
 
-After flashing, the LED starts to blink and messages with the current LED state are printed on the console.
+### 4. Monitor serial output
 
-If a runtime error occurs, the sample exits without printing to the console.
+You can monitor sensor data using a serial terminal such as:
 
----
+- minicom
+- screen
+- PuTTY
+- Serial Monitor in VS Code
 
-## Build Errors
+Example:
 
-You will see a build error at the source code line defining the `struct gpio_dt_spec led` variable if you try to build Blinky for an unsupported board.
-
-On GCC-based toolchains, the error looks like this:
-
-```text
-error: '__device_dts_ord_DT_N_ALIAS_led_P_gpios_IDX_0_PH_ORD'
-undeclared here (not in a function)
+```bash
+screen /dev/ttyACM0 115200
 ```
 
 ---
 
-## Adding Board Support
+## Current Features
 
-To add support for your board, add something like this to your devicetree:
-
-```dts
-/ {
-    aliases {
-        led0 = &myled0;
-    };
-
-    leds {
-        compatible = "gpio-leds";
-
-        myled0: led_0 {
-            gpios = <&gpio0 13 GPIO_ACTIVE_LOW>;
-        };
-    };
-};
-```
-
-The above sets your board's `led0` alias to use pin 13 on GPIO controller `gpio0`.
-
-The pin flag `GPIO_ACTIVE_HIGH` means the LED is on when the pin is set HIGH and off when the pin is LOW.
+- MQ5 gas sensor ADC reading
+- Light sensor ADC reading
+- Real-time serial monitoring
 
 ---
 
-## Tips
+## Project Status
 
-- See `gpio-leds` for more information on defining GPIO-based LEDs
-- Check supported board devicetrees for reference
-- See `gpio.h` for available GPIO flags
-- Use a devicetree overlay if your LED is external
+This project is currently in the early development stage.
+
+More sensors and wireless communication features will be added in future updates.
