@@ -1,97 +1,89 @@
-.. zephyr:code-sample:: blinky
-   :name: Blinky
-   :relevant-api: gpio_interface
+# Nordic Multi-sensor Network
 
-   Blink an LED forever using the GPIO API.
+Blink an LED forever using the GPIO API.
 
-Overview
-********
+---
 
-The Blinky sample blinks an LED forever using the :ref:`GPIO API <gpio_api>`.
+## Overview
+
+The Blinky sample blinks an LED forever using the GPIO API.
 
 The source code shows how to:
 
-#. Get a pin specification from the :ref:`devicetree <dt-guide>` as a
-   :c:struct:`gpio_dt_spec`
-#. Configure the GPIO pin as an output
-#. Toggle the pin forever
+1. Get a pin specification from the devicetree as a `gpio_dt_spec`
+2. Configure the GPIO pin as an output
+3. Toggle the pin forever
 
-See :zephyr:code-sample:`pwm-blinky` for a similar sample that uses the PWM API instead.
+See `pwm-blinky` for a similar sample that uses the PWM API instead.
 
-.. _blinky-sample-requirements:
+---
 
-Requirements
-************
+## Requirements
 
 Your board must:
 
-#. Have an LED connected via a GPIO pin (these are called "User LEDs" on many of
-   Zephyr's :ref:`boards`).
-#. Have the LED configured using the ``led0`` devicetree alias.
+1. Have an LED connected via a GPIO pin
+2. Have the LED configured using the `led0` devicetree alias
 
-Building and Running
-********************
+---
 
-Build and flash Blinky as follows, changing ``reel_board`` for your board:
+## Building and Running
 
-.. zephyr-app-commands::
-   :zephyr-app: samples/basic/blinky
-   :board: reel_board
-   :goals: build flash
-   :compact:
+Build and flash Blinky as follows, changing `reel_board` for your board:
 
-After flashing, the LED starts to blink and messages with the current LED state
-are printed on the console. If a runtime error occurs, the sample exits without
-printing to the console.
+```bash
+west build -b reel_board
+west flash
+```
 
-Build errors
-************
+After flashing, the LED starts to blink and messages with the current LED state are printed on the console.
 
-You will see a build error at the source code line defining the ``struct
-gpio_dt_spec led`` variable if you try to build Blinky for an unsupported
-board.
+If a runtime error occurs, the sample exits without printing to the console.
+
+---
+
+## Build Errors
+
+You will see a build error at the source code line defining the `struct gpio_dt_spec led` variable if you try to build Blinky for an unsupported board.
 
 On GCC-based toolchains, the error looks like this:
 
-.. code-block:: none
+```text
+error: '__device_dts_ord_DT_N_ALIAS_led_P_gpios_IDX_0_PH_ORD'
+undeclared here (not in a function)
+```
 
-   error: '__device_dts_ord_DT_N_ALIAS_led_P_gpios_IDX_0_PH_ORD' undeclared here (not in a function)
+---
 
-Adding board support
-********************
+## Adding Board Support
 
 To add support for your board, add something like this to your devicetree:
 
-.. code-block:: DTS
+```dts
+/ {
+    aliases {
+        led0 = &myled0;
+    };
 
-   / {
-   	aliases {
-   		led0 = &myled0;
-   	};
+    leds {
+        compatible = "gpio-leds";
 
-   	leds {
-   		compatible = "gpio-leds";
-   		myled0: led_0 {
-   			gpios = <&gpio0 13 GPIO_ACTIVE_LOW>;
-                };
-   	};
-   };
+        myled0: led_0 {
+            gpios = <&gpio0 13 GPIO_ACTIVE_LOW>;
+        };
+    };
+};
+```
 
-The above sets your board's ``led0`` alias to use pin 13 on GPIO controller
-``gpio0``. The pin flags :c:macro:`GPIO_ACTIVE_HIGH` mean the LED is on when
-the pin is set to its high state, and off when the pin is in its low state.
+The above sets your board's `led0` alias to use pin 13 on GPIO controller `gpio0`.
 
-Tips:
+The pin flag `GPIO_ACTIVE_HIGH` means the LED is on when the pin is set HIGH and off when the pin is LOW.
 
-- See :dtcompatible:`gpio-leds` for more information on defining GPIO-based LEDs
-  in devicetree.
+---
 
-- If you're not sure what to do, check the devicetrees for supported boards which
-  use the same SoC as your target. See :ref:`get-devicetree-outputs` for details.
+## Tips
 
-- See :zephyr_file:`include/zephyr/dt-bindings/gpio/gpio.h` for the flags you can use
-  in devicetree.
-
-- If the LED is built in to your board hardware, the alias should be defined in
-  your :ref:`BOARD.dts file <devicetree-in-out-files>`. Otherwise, you can
-  define one in a :ref:`devicetree overlay <set-devicetree-overlays>`.
+- See `gpio-leds` for more information on defining GPIO-based LEDs
+- Check supported board devicetrees for reference
+- See `gpio.h` for available GPIO flags
+- Use a devicetree overlay if your LED is external
